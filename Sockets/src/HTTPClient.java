@@ -7,9 +7,9 @@ import java.io.PrintWriter;
 import java.net.*;
 
 public class HTTPClient {
-	
+
 	private String[] args;
-	
+
 	public HTTPClient(String[] args) {
 		if (args.length != 4) {
 			throw new IllegalArgumentException("Wrong number of arguments");
@@ -18,21 +18,21 @@ public class HTTPClient {
 			start();
 		}
 	}
-	
+
 	/*
-	 * GetPath receives an array of string which contain the complete url
-	 * and uses that string to get the path e.g www.test.com/index.html
-	 * will return /index.html
+	 * GetPath receives an array of string which contain the complete url and
+	 * uses that string to get the path e.g www.test.com/index.html will return
+	 * /index.html
 	 */
-	public String GetPath(String[] l){
+	public String GetPath(String[] l) {
 		String result = "";
-		for(int i = 1 ; i < l.length ; i++){
+		for (int i = 1; i < l.length; i++) {
 			result += "/" + l[i];
 		}
 		return result;
 	}
-	
-	public void start(){
+
+	public void start() {
 		String[] arguments = this.getArguments();
 		String command = arguments[0];
 		String uri = arguments[1];
@@ -47,8 +47,18 @@ public class HTTPClient {
 			socket = new Socket(host, iPort);
 			OutputStream out = socket.getOutputStream();
 			PrintWriter outwriter = new PrintWriter(out, false);
-			outwriter.print(command + " " + path + " HTTP/" + version
-					+ "\r\n");
+			outwriter.print(command + " " + path + " HTTP/" + version + "\r\n");
+			/*
+			 * If the version is 1.1 we need to:
+			 * 1. include the Host: header with each request
+			 * 2. accept responses with chunked data
+			 * 3.include the "Connection: close" header with each request
+			 * 4.Handle the 100 Continue response
+			 */
+			if(version.equals("1.1")){
+				outwriter.print("Host: " + host + "\r\n");
+				outwriter.print("Connection: close" + "\r\n");
+			}
 			outwriter.print("Accept: text/plain, text/html, text/*\r\n");
 			outwriter.print("\r\n");
 			outwriter.flush();
@@ -75,14 +85,13 @@ public class HTTPClient {
 
 		}
 	}
-	
-	public void setArgs(String[] args){
+
+	public void setArgs(String[] args) {
 		this.args = args;
 	}
-	
-	public String[] getArguments(){
+
+	public String[] getArguments() {
 		return this.args;
 	}
-	
-	
+
 }
