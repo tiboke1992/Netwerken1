@@ -26,11 +26,9 @@ public class HTTPClient {
 	 */
 	public String GetPath(String[] l){
 		String result = "";
-		System.out.println(l.length);
 		for(int i = 1 ; i < l.length ; i++){
 			result += "/" + l[i];
 		}
-		System.out.println(result);
 		return result;
 	}
 	
@@ -40,7 +38,6 @@ public class HTTPClient {
 		String uri = arguments[1];
 		String[] urls = uri.split("/");
 		String host = urls[0];
-		System.out.println(host);
 		String path = GetPath(urls);
 		String port = arguments[2];
 		int iPort = Integer.parseInt(port);
@@ -48,8 +45,6 @@ public class HTTPClient {
 		Socket socket = null;
 		try {
 			socket = new Socket(host, iPort);
-			System.out.println("Host : " + host  + " Port: " + iPort);
-			System.out.println("Path : " + path);
 			OutputStream out = socket.getOutputStream();
 			PrintWriter outwriter = new PrintWriter(out, false);
 			outwriter.print(command + " " + path + " HTTP/" + version
