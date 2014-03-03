@@ -5,6 +5,10 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class HTTPClient {
 
@@ -38,7 +42,14 @@ public class HTTPClient {
 		String uri = arguments[1];
 		String[] urls = uri.split("/");
 		String host = urls[0];
-		String path = GetPath(urls);
+		String path = "";
+		String usedafter = "";
+		if (urls.length == 1) {
+			path = "/";
+		} else {
+			path = GetPath(urls);
+		}
+
 		String port = arguments[2];
 		int iPort = Integer.parseInt(port);
 		String version = arguments[3];
@@ -47,20 +58,20 @@ public class HTTPClient {
 			socket = new Socket(host, iPort);
 			OutputStream out = socket.getOutputStream();
 			PrintWriter outwriter = new PrintWriter(out, false);
-			outwriter.print(command + " " + path + " HTTP/" + version + "\r\n");
+			outwriter.print(command + " " + path + " HTTP/" + version + "\n");
 			/*
-			 * If the version is 1.1 we need to:
-			 * 1. include the Host: header with each request
-			 * 2. accept responses with chunked data
-			 * 3.include the "Connection: close" header with each request
-			 * 4.Handle the 100 Continue response
+			 * If the version is 1.1 we need to: 1. include the Host: header
+			 * with each request 2. accept responses with chunked data 3.include
+			 * the "Connection: close" header with each request 4.Handle the 100
+			 * Continue response
 			 */
-			if(version.equals("1.1")){
-				outwriter.print("Host: " + host + "\r\n");
-				outwriter.print("Connection: close" + "\r\n");
+			if (version.equals("1.1")) {
+				outwriter.print("Host: " + host + "\n");
+				// outwriter.print("Connection: close" + "\n");
 			}
-			outwriter.print("Accept: text/plain, text/html, text/*\r\n");
-			outwriter.print("\r\n");
+			outwriter.print("Accept: text/plain, text/html, text/*\n");
+			outwriter.print("User-Agent: Mozilla/5.0 \n");
+			outwriter.print("\n");
 			outwriter.flush();
 
 			InputStream in = socket.getInputStream();
@@ -69,6 +80,7 @@ public class HTTPClient {
 			String line;
 			while ((line = buffer.readLine()) != null) {
 				System.out.println(line);
+				usedafter += line;
 			}
 			buffer.close();
 
@@ -84,6 +96,7 @@ public class HTTPClient {
 			}
 
 		}
+		DoSometingWithImages(usedafter);
 	}
 
 	public void setArgs(String[] args) {
@@ -92,6 +105,14 @@ public class HTTPClient {
 
 	public String[] getArguments() {
 		return this.args;
+	}
+
+	public void DoSometingWithImages(String line) {
+		Pattern p = Pattern.compile("<img[^>]+src\\s*=\\s*['\"]([^'\"]+)['\"][^>]*>");
+		Matcher m = p.matcher(line);
+		while (m.find()) {
+		System.out.println(m.group());
+		}
 	}
 
 }
