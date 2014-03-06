@@ -108,10 +108,11 @@ public class HTTPClient {
 	}
 
 	public void DoSometingWithImages(String line) {
-		Pattern p = Pattern.compile("<img[^>]+src\\s*=\\s*['\"]([^'\"]+)['\"][^>]*>");
+		Pattern p = Pattern
+				.compile("<img[^>]+src\\s*=\\s*['\"]([^'\"]+)['\"][^>]*>");
 		Matcher m = p.matcher(line);
 		while (m.find()) {
-		System.out.println(m.group());
+			System.out.println(m.group());
 		}
 	}
 
