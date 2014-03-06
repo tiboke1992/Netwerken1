@@ -6,13 +6,15 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.*;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 public class HTTPClient {
 
 	private String[] args;
+	private ArrayList<String> imgs = new ArrayList<String>();
 
 	public HTTPClient(String[] args) {
 		if (args.length != 4) {
@@ -43,7 +45,6 @@ public class HTTPClient {
 		String[] urls = uri.split("/");
 		String host = urls[0];
 		String path = "";
-		String usedafter = "";
 		if (urls.length == 1) {
 			path = "/";
 		} else {
@@ -77,12 +78,13 @@ public class HTTPClient {
 			InputStream in = socket.getInputStream();
 			InputStreamReader inr = new InputStreamReader(in);
 			BufferedReader buffer = new BufferedReader(inr);
-			String line;
+			String line = "";
 			while ((line = buffer.readLine()) != null) {
 				System.out.println(line);
-				usedafter += line;
+//				DoSometingWithImages(line);
 			}
 			buffer.close();
+			test(host + path);
 
 		} catch (UnknownHostException e) {
 			System.out.println("Unknown host");
@@ -96,7 +98,7 @@ public class HTTPClient {
 			}
 
 		}
-		DoSometingWithImages(usedafter);
+//		checkForImages();
 	}
 
 	public void setArgs(String[] args) {
@@ -107,13 +109,35 @@ public class HTTPClient {
 		return this.args;
 	}
 
-	public void DoSometingWithImages(String line) {
-		Pattern p = Pattern
-				.compile("<img[^>]+src\\s*=\\s*['\"]([^'\"]+)['\"][^>]*>");
-		Matcher m = p.matcher(line);
-		while (m.find()) {
-			System.out.println(m.group());
-		}
-	}
+//	public void DoSometingWithImages(String line) {
+//		Pattern p = Pattern
+//				.compile("<img[^>]+src\\s*=\\s*['\"]([^'\"]+)['\"][^>]*>");
+//		Matcher m = p.matcher(line);
+//		while (m.find()) {
+//			imgs.add(m.group());
+//		}
+//	}
+//
+//	public void checkForImages() {
+//		if (!this.imgs.isEmpty()) {
+//			for (String s : this.imgs) {
+//				System.out.println(s);
+//			}
+//		}
+//	}
 
+	public void test(String url) {
+		try {
+			Document doc = Jsoup.connect("http://" + url).get();
+			Elements img = doc.getElementsByTag("img");
+			for (Element el : img) {
+				String src = el.absUrl("src");
+				System.out.println(src);				
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
 }
