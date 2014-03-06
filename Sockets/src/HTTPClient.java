@@ -7,7 +7,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.*;
-import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
@@ -19,7 +18,6 @@ import org.jsoup.select.Elements;
 public class HTTPClient {
 
 	private String[] args;
-	private ArrayList<String> imgs = new ArrayList<String>();
 
 	public HTTPClient(String[] args) {
 		if (args.length != 4) {
@@ -86,7 +84,6 @@ public class HTTPClient {
 			String line = "";
 			while ((line = buffer.readLine()) != null) {
 				System.out.println(line);
-				// DoSometingWithImages(line);
 			}
 			buffer.close();
 			saveTheImages(host + path);
