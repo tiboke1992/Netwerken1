@@ -15,6 +15,8 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+//TODO opkuisen en een extra commando da vraagt als ge put of post gebruikt
+
 public class HTTPClient {
 
 	private String[] args;
