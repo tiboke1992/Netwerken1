@@ -1,4 +1,6 @@
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -6,6 +8,9 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.*;
 import java.util.ArrayList;
+
+import javax.imageio.ImageIO;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -81,10 +86,10 @@ public class HTTPClient {
 			String line = "";
 			while ((line = buffer.readLine()) != null) {
 				System.out.println(line);
-//				DoSometingWithImages(line);
+				// DoSometingWithImages(line);
 			}
 			buffer.close();
-			test(host + path);
+			saveTheImages(host + path);
 
 		} catch (UnknownHostException e) {
 			System.out.println("Unknown host");
@@ -98,7 +103,6 @@ public class HTTPClient {
 			}
 
 		}
-//		checkForImages();
 	}
 
 	public void setArgs(String[] args) {
@@ -109,30 +113,29 @@ public class HTTPClient {
 		return this.args;
 	}
 
-//	public void DoSometingWithImages(String line) {
-//		Pattern p = Pattern
-//				.compile("<img[^>]+src\\s*=\\s*['\"]([^'\"]+)['\"][^>]*>");
-//		Matcher m = p.matcher(line);
-//		while (m.find()) {
-//			imgs.add(m.group());
-//		}
-//	}
-//
-//	public void checkForImages() {
-//		if (!this.imgs.isEmpty()) {
-//			for (String s : this.imgs) {
-//				System.out.println(s);
-//			}
-//		}
-//	}
-
-	public void test(String url) {
+	public void saveTheImages(String url) {
 		try {
 			Document doc = Jsoup.connect("http://" + url).get();
 			Elements img = doc.getElementsByTag("img");
+			int counter = 1;
 			for (Element el : img) {
 				String src = el.absUrl("src");
-				System.out.println(src);				
+				System.out.println(src);
+				BufferedImage image = null;
+				try {
+
+					URL uri = new URL(src);
+					image = ImageIO.read(uri);
+					if (image != null) {
+						File outputfile = new File("saved" + counter + ".png");
+						ImageIO.write(image, "png", outputfile);
+						counter++;
+						System.out.println("Image saved");
+					}
+				} catch (IOException e) {
+					System.out
+							.println("something went wrong while trying to read this images");
+				}
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
