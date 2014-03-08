@@ -20,12 +20,23 @@ import org.jsoup.select.Elements;
 public class HTTPClient {
 
 	private String[] args;
+	private String command;
+	private String version;
+	private String uri;
+	private String host;
+	private String path;
+	private int port;
+
+
+
+	
 
 	public HTTPClient(String[] args) {
 		if (args.length != 4) {
 			throw new IllegalArgumentException("Wrong number of arguments");
 		} else {
 			setArgs(args);
+			initialize();
 			start();
 		}
 	}
@@ -35,7 +46,7 @@ public class HTTPClient {
 	 * uses that string to get the path e.g www.test.com/index.html will return
 	 * /index.html
 	 */
-	public String GetPath(String[] l) {
+	public String getPath(String[] l) {
 		String result = "";
 		for (int i = 1; i < l.length; i++) {
 			result += "/" + l[i];
@@ -43,38 +54,37 @@ public class HTTPClient {
 		return result;
 	}
 
-	public void start() {
+	public void initialize() {
 		String[] arguments = this.getArguments();
-		String command = arguments[0];
-		String uri = arguments[1];
+		setCommand(arguments[0]);
+		setUri(arguments[1]);
 		String[] urls = uri.split("/");
-		String host = urls[0];
-		String path = "";
+		setHost(urls[0]);
+		//this is needed for splitting the url 
 		if (urls.length == 1) {
-			path = "/";
+			setPath("/");
 		} else {
-			path = GetPath(urls);
+			setPath(getPath(urls));
 		}
+		setPort(Integer.parseInt(arguments[2]));
+		setVersion(arguments[3]);
+	}
 
-		String port = arguments[2];
-		int iPort = Integer.parseInt(port);
-		String version = arguments[3];
+	public void start() {
+
 		Socket socket = null;
 		try {
-			socket = new Socket(host, iPort);
+			socket = new Socket(getHost(), getPort());
 			OutputStream out = socket.getOutputStream();
 			PrintWriter outwriter = new PrintWriter(out, false);
-			outwriter.print(command + " " + path + " HTTP/" + version + "\n");
-			/*
-			 * If the version is 1.1 we need to: 1. include the Host: header
-			 * with each request 2. accept responses with chunked data 3.include
-			 * the "Connection: close" header with each request 4.Handle the 100
-			 * Continue response
-			 */
-			if (version.equals("1.1")) {
-				outwriter.print("Host: " + host + "\n");
-				//If we use 1.1 it's important to make sure the connection closes
-				//Else you have to wait untill the connection times out?
+			outwriter.print(getCommand() + " " + getPath() + " HTTP/"
+					+ getVersion() + "\n");
+
+			if (getVersion().equals("1.1")) {
+				outwriter.print("Host: " + getHost() + "\n");
+				// If we use 1.1 it's important to make sure the connection
+				// closes
+				// Else you have to wait untill the connection times out?
 				outwriter.print("Connection: close" + "\n");
 			}
 			outwriter.print("Accept: text/plain, text/html, text/*\n");
@@ -90,7 +100,7 @@ public class HTTPClient {
 				System.out.println(line);
 			}
 			System.out.println("Finnished reading");
-			saveTheImages(host + path);
+			saveTheImages(getHost() + getPath());
 
 		} catch (UnknownHostException e) {
 			System.out.println("Unknown host");
@@ -107,17 +117,11 @@ public class HTTPClient {
 		}
 	}
 
-	public void setArgs(String[] args) {
-		this.args = args;
-	}
 
-	public String[] getArguments() {
-		return this.args;
-	}
-
-	
 	/*
-	 * 
+	 * This method will check if a given URL contains any images. It uses the
+	 * Jsoop framework to get the source from the image tags. It then saves all found images
+	 * to the project folder
 	 */
 	public void saveTheImages(String url) {
 		try {
@@ -130,7 +134,6 @@ public class HTTPClient {
 				System.out.println(src);
 				BufferedImage image = null;
 				try {
-
 					URL uri = new URL(src);
 					image = ImageIO.read(uri);
 					if (image != null) {
@@ -145,9 +148,68 @@ public class HTTPClient {
 				}
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	/*
+	 * Getters and setters
+	 * 
+	 */
+	
+	public String getHost() {
+		return host;
+	}
 
+	public void setHost(String host) {
+		this.host = host;
+	}
+
+	public String getPath() {
+		return path;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
+	}
+
+	public int getPort() {
+		return port;
+	}
+
+	public void setPort(int port) {
+		this.port = port;
+	}
+
+	public String getVersion() {
+		return version;
+	}
+
+	public void setVersion(String version) {
+		this.version = version;
+	}
+
+	public String getCommand() {
+		return command;
+	}
+
+	public void setCommand(String command) {
+		this.command = command;
+	}
+
+	public String getUri() {
+		return uri;
+	}
+
+	public void setUri(String uri) {
+		this.uri = uri;
+	}
+	
+	public void setArgs(String[] args) {
+		this.args = args;
+	}
+
+	public String[] getArguments() {
+		return this.args;
 	}
 }
