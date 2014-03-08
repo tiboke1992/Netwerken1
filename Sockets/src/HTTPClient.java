@@ -28,9 +28,6 @@ public class HTTPClient {
 	private int port;
 
 
-
-	
-
 	public HTTPClient(String[] args) {
 		if (args.length != 4) {
 			throw new IllegalArgumentException("Wrong number of arguments");
@@ -71,7 +68,6 @@ public class HTTPClient {
 	}
 
 	public void start() {
-
 		Socket socket = null;
 		try {
 			socket = new Socket(getHost(), getPort());
@@ -84,11 +80,27 @@ public class HTTPClient {
 				outwriter.print("Host: " + getHost() + "\n");
 				// If we use 1.1 it's important to make sure the connection
 				// closes
-				// Else you have to wait untill the connection times out?
+				// Else you have to wait until the connection times out?
 				outwriter.print("Connection: close" + "\n");
 			}
 			outwriter.print("Accept: text/plain, text/html, text/*\n");
 			outwriter.print("User-Agent: Mozilla/5.0 \n");
+			if(getCommand().toUpperCase().equals("POST")){
+				System.out.println("Give parameters for POST:");
+				BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
+				String ag = "";
+				try{
+					ag = input.readLine();
+				}catch(IOException io){
+					System.out.println("Cant use those arguments");
+				}
+				outwriter.print("Content-Type: application/x-www-form-urlencoded" + "\n");
+				outwriter.print("Content-Length: " + ag.length() + "\n");
+				System.out.println("Content-Length: " + ag.length() + "\n");
+				outwriter.print("\n");
+				outwriter.print(ag);
+				outwriter.print("\n");
+			}
 			outwriter.print("\n");
 			outwriter.flush();
 
