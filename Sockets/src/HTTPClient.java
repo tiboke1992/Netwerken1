@@ -73,7 +73,9 @@ public class HTTPClient {
 			 */
 			if (version.equals("1.1")) {
 				outwriter.print("Host: " + host + "\n");
-				// outwriter.print("Connection: close" + "\n");
+				//If we use 1.1 it's important to make sure the connection closes
+				//Else you have to wait untill the connection times out?
+				outwriter.print("Connection: close" + "\n");
 			}
 			outwriter.print("Accept: text/plain, text/html, text/*\n");
 			outwriter.print("User-Agent: Mozilla/5.0 \n");
@@ -87,7 +89,7 @@ public class HTTPClient {
 			while ((line = buffer.readLine()) != null) {
 				System.out.println(line);
 			}
-			buffer.close();
+			System.out.println("Finnished reading");
 			saveTheImages(host + path);
 
 		} catch (UnknownHostException e) {
@@ -99,6 +101,7 @@ public class HTTPClient {
 			try {
 				socket.close();
 			} catch (IOException ioEx) {
+				System.out.println("Problems closing the socket");
 			}
 
 		}
@@ -112,8 +115,13 @@ public class HTTPClient {
 		return this.args;
 	}
 
+	
+	/*
+	 * 
+	 */
 	public void saveTheImages(String url) {
 		try {
+			System.out.println("Checking if there are any images on this page");
 			Document doc = Jsoup.connect("http://" + url).get();
 			Elements img = doc.getElementsByTag("img");
 			int counter = 1;
@@ -133,7 +141,7 @@ public class HTTPClient {
 					}
 				} catch (IOException e) {
 					System.out
-							.println("something went wrong while trying to read this images");
+							.println("something went wrong while trying to read this image");
 				}
 			}
 		} catch (IOException e) {
