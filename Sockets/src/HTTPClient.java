@@ -28,6 +28,10 @@ public class HTTPClient {
 	private int port;
 
 
+	public static void main(String[] args){
+		HTTPClient c = new HTTPClient(args);
+	}
+	
 	public HTTPClient(String[] args) {
 		if (args.length != 4) {
 			throw new IllegalArgumentException("Wrong number of arguments");
@@ -37,7 +41,6 @@ public class HTTPClient {
 			start();
 		}
 	}
-
 
 	/*
 	 * GetPath receives an array of string which contain the complete url and
@@ -161,7 +164,7 @@ public class HTTPClient {
 				}
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.out.println("No images found");
 		}
 	}
 	
