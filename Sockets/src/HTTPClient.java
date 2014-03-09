@@ -89,7 +89,7 @@ public class HTTPClient {
 			}
 			outwriter.print("Accept: text/plain, text/html, text/*\n");
 			outwriter.print("User-Agent: Mozilla/5.0 \n");
-			if(getCommand().toUpperCase().equals("POST")){
+			if(getCommand().toUpperCase().equals("POST") || getCommand().toUpperCase().equals("PUT")){
 				System.out.println("Give parameters for POST:");
 				BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
 				String ag = "";
