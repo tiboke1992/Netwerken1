@@ -38,6 +38,7 @@ public class HTTPClient {
 		}
 	}
 
+
 	/*
 	 * GetPath receives an array of string which contain the complete url and
 	 * uses that string to get the path e.g www.test.com/index.html will return
