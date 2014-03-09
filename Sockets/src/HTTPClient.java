@@ -117,7 +117,7 @@ public class HTTPClient {
 		} catch (UnknownHostException e) {
 			System.out.println("Unknown host");
 		} catch (IOException e) {
-			System.out.println("IO error");
+			System.out.println("Cant acces this website");
 		}
 		if (socket != null) {
 			try {
